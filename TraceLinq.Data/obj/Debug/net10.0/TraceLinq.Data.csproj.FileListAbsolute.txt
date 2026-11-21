@@ -1,0 +1,15 @@
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/bin/Debug/net10.0/TraceLinq.Data.deps.json
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/bin/Debug/net10.0/TraceLinq.Data.runtimeconfig.json
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/bin/Debug/net10.0/TraceLinq.Data.dll
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/bin/Debug/net10.0/TraceLinq.Data.pdb
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.csproj.AssemblyReference.cache
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.GeneratedMSBuildEditorConfig.editorconfig
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.AssemblyInfoInputs.cache
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.AssemblyInfo.cs
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.csproj.CoreCompileInputs.cache
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.sourcelink.json
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.dll
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/refint/TraceLinq.Data.dll
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.pdb
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/TraceLinq.Data.genruntimeconfig.cache
+/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Data/obj/Debug/net10.0/ref/TraceLinq.Data.dll
