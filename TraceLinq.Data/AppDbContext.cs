@@ -54,6 +54,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<QualityCheck>(e =>
         {
             e.ToTable("QualityChecks");
+            e.HasKey(x => x.CheckId);
             e.HasIndex(x => x.BatchId).IsUnique();
             e.Property(x => x.Result).HasMaxLength(10).HasConversion<string>();
             e.Property(x => x.CheckedAt).HasColumnType("datetime").HasDefaultValueSql("GETDATE()");
@@ -72,6 +73,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<WarehouseStorage>(e =>
         {
             e.ToTable("WarehouseStorage");
+            e.HasKey(x => x.StorageId);
             e.HasIndex(x => x.BatchId).IsUnique();
             e.Property(x => x.ArrivalTime).HasColumnType("datetime").HasDefaultValueSql("GETDATE()");
             e.Property(x => x.DispatchedAt).HasColumnType("datetime");
@@ -86,6 +88,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<AuditLog>(e =>
         {
             e.ToTable("AuditLog");
+            e.HasKey(x => x.LogId);
             e.Property(x => x.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GETDATE()");
             e.HasOne(x => x.User).WithMany(u => u.AuditLogs)
                 .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
