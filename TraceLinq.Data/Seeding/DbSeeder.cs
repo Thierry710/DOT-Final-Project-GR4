@@ -28,6 +28,28 @@ public static class DbSeeder
                 new Location { LocationName = "Section B, Shelf 3" },
                 new Location { LocationName = "Cold Room 1" });
         }
+        if (!db.Batches.Any())
+        {
+            var producer = db.Users.First(u => u.Role == UserRole.Producer);
+
+            if(producer == null)
+            {
+                return;
+            }
+
+            db.Batches.Add(new Batch
+            {
+                BatchId = "BATCH-001",
+                ProductType = "Coffee Beans",
+                Quantity = 100,
+                Unit = "kg",
+                OriginLocation = "Nyamagabe, Rwanda",
+                ProductionDate = DateOnly.FromDateTime(DateTime.Today),
+                ProducerId = producer.UserId,
+                Status = BatchStatus.Registered,
+            });
+
+        }
 
         db.SaveChanges();
     }
