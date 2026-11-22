@@ -1,0 +1,63 @@
+@page "{id}"
+@using TraceLinq.Data.Models
+@model TraceLinq.Pages.Inspector.CheckModel
+@{
+    ViewData["Title"] = "Quality Check";
+}
+
+<h1 class="h3 mb-3">Quality Check: @Model.Batch!.BatchId</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Product</dt>
+    <dd class="col-sm-9">@Model.Batch.ProductType</dd>
+    <dt class="col-sm-3">Quantity</dt>
+    <dd class="col-sm-9">@Model.Batch.Quantity @Model.Batch.Unit</dd>
+    <dt class="col-sm-3">Origin</dt>
+    <dd class="col-sm-9">@Model.Batch.OriginLocation</dd>
+    <dt class="col-sm-3">Production Date</dt>
+    <dd class="col-sm-9">@Model.Batch.ProductionDate</dd>
+    <dt class="col-sm-3">Producer</dt>
+    <dd class="col-sm-9">@Model.Batch.Producer.FullName</dd>
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Batch.Status</dd>
+</dl>
+
+@if (Model.Batch.Status != BatchStatus.Registered)
+{
+    <div class="alert alert-info">This batch has already been inspected.</div>
+    <a asp-page="Index" class="btn btn-secondary">Back</a>
+}
+else
+{
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label class="form-label d-block">Result</label>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Result" id="resultPass" value="Passed"
+                       checked="@(Model.Result.ToString() == "Passed")" />
+                <label class="form-check-label" for="resultPass">Pass</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Result" id="resultFail" value="Failed"
+                       checked="@(Model.Result.ToString() == "Failed")" />
+                <label class="form-check-label" for="resultFail">Fail</label>
+            </div>
+            <span asp-validation-for="Result" class="text-danger d-block"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Remarks" class="form-label">Remarks (required if Fail)</label>
+            <textarea asp-for="Remarks" class="form-control" rows="4" maxlength="300"></textarea>
+            <span asp-validation-for="Remarks" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit inspection</button>
+        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
