@@ -2,30 +2,39 @@
 @using TraceLinq.Data.Models
 @model TraceLinq.Pages.Trace.IndexModel
 @{
-    ViewData["Title"] = "Track a Batch";
+    ViewData["Title"] = "Track a batch";
 }
 
-<h1 class="h3 mb-3">Track a Batch</h1>
-<p class="text-muted">Enter a batch ID to see its journey from production to delivery.</p>
-
-<form method="get" class="row g-2 mb-4">
-    <div class="col-auto">
-        <input type="text" name="batchId" class="form-control" placeholder="Batch ID" value="@Model.BatchId" />
+<div class="tl-page-head">
+    <div>
+        <p class="tl-eyebrow">Public tracing</p>
+        <h1>Track a batch</h1>
+        <p class="tl-sub">Enter a batch ID to see its journey from production to delivery.</p>
     </div>
-    <div class="col-auto">
+</div>
+
+<div class="tl-card tl-card-pad mb-4">
+    <form method="get" class="d-flex flex-wrap gap-2">
+        <input type="text" name="batchId" class="form-control" style="max-width: 22rem" placeholder="e.g. BT-20261105-001"
+               aria-label="Batch ID" value="@Model.BatchId" />
         <button type="submit" class="btn btn-primary">Track</button>
-    </div>
-</form>
-
-<p class="text-muted small">
-    <span class="badge text-bg-secondary">Coming soon</span> Scan a batch QR code to track it instantly.
-</p>
+    </form>
+    <p class="tl-sub small mt-3 mb-0">
+        <span class="tl-status tl-status-neutral">Coming soon</span> Scan a batch QR code to track it instantly.
+    </p>
+</div>
 
 @if (Model.Searched)
 {
     if (Model.Batch is null)
     {
-        <div class="alert alert-warning" role="alert">Batch not found.</div>
+        <div class="tl-card">
+            <div class="tl-empty">
+                <partial name="_Icon" model='"search"' />
+                <strong>Batch not found</strong>
+                Check the ID and try again.
+            </div>
+        </div>
     }
     else
     {
@@ -33,61 +42,72 @@
         var q = b.QualityCheck;
         var w = b.WarehouseStorage;
 
-        <h2 class="h5">Batch @b.BatchId</h2>
+        <div class="tl-card tl-trace-card">
+            <div class="tl-trace-head">
+                <div>
+                    <div class="tl-trace-id">@b.BatchId</div>
+                    <div class="tl-trace-sub">@b.ProductType &middot; @b.Quantity.ToString("0.##") @b.Unit &middot; from @b.OriginLocation</div>
+                </div>
+                <partial name="_StatusBadge" model="b.Status.ToString()" />
+            </div>
 
-        <ul class="list-group mb-4">
-            <li class="list-group-item">
-                <strong>1. Registered</strong>
-                <span class="badge text-bg-secondary ms-2">@b.Status</span><br />
-                Product: @b.ProductType (@b.Quantity @b.Unit)<br />
-                Origin: @b.OriginLocation<br />
-                Production date: @b.ProductionDate.ToString("yyyy-MM-dd")<br />
-                Registered by: @b.Producer.FullName on @b.CreatedAt.ToString("yyyy-MM-dd HH:mm")
-            </li>
-
-            @if (q is not null)
-            {
-                <li class="list-group-item">
-                    <strong>2. Quality check</strong>
-                    @if (q.Result == QualityResult.Passed)
-                    {
-                        <span class="badge text-bg-success ms-2">Pass</span>
-                    }
-                    else
-                    {
-                        <span class="badge text-bg-danger ms-2">Fail</span>
-                    }
-                    <br />
-                    Checked on: @q.CheckedAt.ToString("yyyy-MM-dd HH:mm") by @q.Inspector.FullName
-                    @if (!string.IsNullOrEmpty(q.Remarks))
-                    {
-                        <br />
-                        <span>Remarks: @q.Remarks</span>
-                    }
-                </li>
-            }
-
-            @if (w is not null)
-            {
-                <li class="list-group-item">
-                    <strong>3. Warehouse storage</strong><br />
-                    Location: @w.StorageLocation<br />
-                    Received on: @w.ArrivalTime.ToString("yyyy-MM-dd HH:mm")
+            <ol class="tl-timeline">
+                <li style="--s-bg: var(--st-registered-bg); --s-fg: var(--st-registered);">
+                    <span class="dot"><partial name="_Icon" model='"box"' /></span>
+                    <strong>Produced and registered</strong>
+                    <span>Produced @b.ProductionDate.ToString("d MMM yyyy") &middot; registered @b.CreatedAt.ToString("d MMM yyyy, HH:mm")</span>
                 </li>
 
-                @if (w.DispatchedAt is not null)
+                @if (q is not null)
                 {
-                    <li class="list-group-item">
-                        <strong>4. Dispatched</strong>
-                        <span class="badge text-bg-primary ms-2">Dispatched</span><br />
-                        Dispatched on: @w.DispatchedAt.Value.ToString("yyyy-MM-dd HH:mm")
+                    var passed = q.Result == QualityResult.Passed;
+                    <li style="--s-bg: var(--st-@(passed ? "passed" : "failed")-bg); --s-fg: var(--st-@(passed ? "passed" : "failed"));">
+                        <span class="dot"><partial name="_Icon" model='"inspect"' /></span>
+                        <strong>Quality check @(passed ? "passed" : "failed")</strong>
+                        <span>
+                            @q.CheckedAt.ToString("d MMM yyyy, HH:mm")
+                            @if (!string.IsNullOrEmpty(q.Remarks))
+                            {
+                                <text>&middot; &ldquo;@q.Remarks&rdquo;</text>
+                            }
+                        </span>
                     </li>
                 }
                 else
                 {
-                    <li class="list-group-item text-muted">Still in storage.</li>
+                    <li style="--s-bg: var(--tl-surface-2); --s-fg: var(--tl-muted);">
+                        <span class="dot"><partial name="_Icon" model='"inspect"' /></span>
+                        <strong>Awaiting quality check</strong>
+                        <span>Next step in the journey</span>
+                    </li>
                 }
-            }
-        </ul>
+
+                @if (w is not null)
+                {
+                    <li style="--s-bg: var(--st-instorage-bg); --s-fg: var(--st-instorage);">
+                        <span class="dot"><partial name="_Icon" model='"warehouse"' /></span>
+                        <strong>Stored in @w.StorageLocation</strong>
+                        <span>Received @w.ArrivalTime.ToString("d MMM yyyy, HH:mm")</span>
+                    </li>
+
+                    if (w.DispatchedAt is not null)
+                    {
+                        <li style="--s-bg: var(--st-dispatched-bg); --s-fg: var(--st-dispatched);">
+                            <span class="dot"><partial name="_Icon" model='"truck"' /></span>
+                            <strong>Dispatched</strong>
+                            <span>@w.DispatchedAt.Value.ToString("d MMM yyyy, HH:mm")</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li style="--s-bg: var(--tl-surface-2); --s-fg: var(--tl-muted);">
+                            <span class="dot"><partial name="_Icon" model='"truck"' /></span>
+                            <strong>Awaiting dispatch</strong>
+                            <span>Still in storage</span>
+                        </li>
+                    }
+                }
+            </ol>
+        </div>
     }
 }

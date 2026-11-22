@@ -1,0 +1,16 @@
+@* Batch/result status pill. Usage: <partial name="_StatusBadge" model="b.Status.ToString()" /> *@
+@model string
+@{
+    var key = (Model ?? "").Replace(" ", "").ToLowerInvariant();
+    var label = key switch
+    {
+        "instorage" => "In storage",
+        "registered" => "Registered",
+        "passed" => "Passed",
+        "failed" => "Failed",
+        "dispatched" => "Dispatched",
+        _ => Model ?? ""
+    };
+    var css = key is "registered" or "passed" or "failed" or "instorage" or "dispatched" ? key : "neutral";
+}
+<span class="tl-status tl-status-@css">@label</span>

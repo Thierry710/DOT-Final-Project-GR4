@@ -1,7 +1,124 @@
 @page
+@model TraceLinq.Pages.Admin.DashboardModel
+@using TraceLinq.Data.Models
 @{
-    ViewData["Title"] = "Admin dashboard";
+    ViewData["Title"] = "Admin overview";
+    string Initials(string? n) => string.Concat((n ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpperInvariant(p[0])));
 }
-<h1 class="h3">Admin dashboard</h1>
-<p>Welcome, @User.FullName().</p>
-<a asp-page="Users" class="btn btn-primary">Manage Users</a>
+
+<div class="tl-page-head">
+    <div>
+        <p class="tl-eyebrow">Admin</p>
+        <h1>Welcome back, @(User.FullName().Split(' ').FirstOrDefault())</h1>
+        <p class="tl-sub">A quick look at your users, batches and recent activity.</p>
+    </div>
+    <a class="btn btn-primary" asp-page="Users">Manage users</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="tl-card tl-stat">
+            <p class="tl-stat-label">Users</p>
+            <p class="tl-stat-value">@Model.TotalUsers</p>
+            <p class="tl-stat-note">@Model.ActiveUsers active</p>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="tl-card tl-stat tl-stat-registered">
+            <p class="tl-stat-label">Batches</p>
+            <p class="tl-stat-value">@Model.TotalBatches</p>
+            <p class="tl-stat-note">across all stages</p>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="tl-card tl-stat tl-stat-passed">
+            <p class="tl-stat-label">Passed</p>
+            <p class="tl-stat-value">@Model.Count(BatchStatus.Passed)</p>
+            <p class="tl-stat-note">ready for the warehouse</p>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="tl-card tl-stat tl-stat-failed">
+            <p class="tl-stat-label">Failed</p>
+            <p class="tl-stat-value">@Model.Count(BatchStatus.Failed)</p>
+            <p class="tl-stat-note">stopped at inspection</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="tl-card tl-card-pad h-100">
+            <h2 class="tl-card-title">Batches by status</h2>
+            @{
+                var stages = new (BatchStatus S, string Label)[]
+                {
+                    (BatchStatus.Registered, "Registered"), (BatchStatus.Passed, "Passed"), (BatchStatus.Failed, "Failed"),
+                    (BatchStatus.InStorage, "In storage"), (BatchStatus.Dispatched, "Dispatched")
+                };
+                int max = Math.Max(1, stages.Max(x => Model.Count(x.S)));
+            }
+            @foreach (var st in stages)
+            {
+                var n = Model.Count(st.S);
+                var pct = n * 100 / max;
+                var key = st.S.ToString().ToLowerInvariant();
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div style="width:92px"><span class="tl-status tl-status-@key">@st.Label</span></div>
+                    <div class="flex-grow-1" role="img" aria-label="@st.Label: @n">
+                        <div style="height:10px;border-radius:999px;background:var(--tl-surface-2);border:1px solid var(--tl-border);overflow:hidden">
+                            <div style="height:100%;width:@(n == 0 ? 0 : Math.Max(pct, 4))%;border-radius:999px;background:var(--st-@key)"></div>
+                        </div>
+                    </div>
+                    <strong class="text-end" style="width:2.5rem;font-variant-numeric:tabular-nums">@n</strong>
+                </div>
+            }
+            @if (Model.TotalBatches == 0)
+            {
+                <p class="tl-sub mb-0">No batches yet. They appear here once producers start registering them.</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="tl-card tl-card-pad h-100">
+            <h2 class="tl-card-title">Team</h2>
+            <div class="row g-2">
+                @foreach (var r in new[] { UserRole.Admin, UserRole.Producer, UserRole.Inspector, UserRole.Warehouse })
+                {
+                    <div class="col-6">
+                        <div class="p-3 rounded-3" style="background:var(--tl-surface-2);border:1px solid var(--tl-border)">
+                            <div class="tl-stat-label">@r</div>
+                            <div class="fs-4 fw-bold">@Model.Count(r)</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="tl-card tl-card-pad">
+            <h2 class="tl-card-title">Recent activity</h2>
+            @if (!Model.Recent.Any())
+            {
+                <p class="tl-sub mb-0">Nothing has happened yet.</p>
+            }
+            else
+            {
+                <ul class="tl-feed">
+                    @foreach (var a in Model.Recent)
+                    {
+                        <li>
+                            <span class="tl-avatar tl-avatar-sm">@(Initials(a.User?.FullName) is { Length: > 0 } i ? i : "?")</span>
+                            <div>
+                                <div class="tl-feed-action">@a.Action@(a.BatchId != null ? " · " + a.BatchId : "")</div>
+                                <div class="tl-feed-meta">@(a.User?.FullName ?? "System") &middot; @a.CreatedAt.ToString("d MMM yyyy, HH:mm")</div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

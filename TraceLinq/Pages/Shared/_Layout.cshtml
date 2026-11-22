@@ -3,44 +3,80 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>@ViewData["Title"] - TraceLinq</title>
-    <script type="importmap"></script>
+    <script>
+        // Apply the saved (or system) theme before first paint to avoid a flash.
+        (function () {
+            try {
+                var t = localStorage.getItem('tl-theme');
+                if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-bs-theme', t);
+            } catch (e) { }
+        })();
+    </script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TraceLinq.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">TraceLinq</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
+@{
+    var page = (ViewContext.RouteData.Values["page"] as string) ?? "";
+    bool signedIn = User.Identity?.IsAuthenticated == true;
+    var role = User.RoleName();
+    bool Is(params string[] prefixes) => prefixes.Any(p => page.StartsWith(p, StringComparison.OrdinalIgnoreCase));
+}
+    <header class="tl-nav">
+        <nav class="container d-flex flex-wrap align-items-center">
+            <a class="tl-brand me-md-4" asp-page="/Index">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor" /><path d="M9 21l5-8 4 6 5-10" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="21" r="2.1" fill="#fff" /><circle cx="23" cy="9" r="2.1" fill="#fff" /></svg>
+                TraceLinq
+            </a>
+
+            <button class="navbar-toggler ms-auto d-md-none border-0 shadow-none p-1" type="button" data-bs-toggle="collapse" data-bs-target="#tlNav" aria-controls="tlNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse d-md-flex flex-grow-1 align-items-center" id="tlNav">
+                <ul class="navbar-nav flex-row flex-wrap mt-3 mt-md-0">
+                @if (!signedIn)
+                {
+                    <li><a class="tl-nav-link @(Is("/Index") ? "active" : "")" asp-page="/Index">Home</a></li>
+                }
+                else if (role == "Admin")
+                {
+                    <li><a class="tl-nav-link @(Is("/Admin/Dashboard") ? "active" : "")" asp-page="/Admin/Dashboard">Overview</a></li>
+                    <li><a class="tl-nav-link @(Is("/Admin/Users") ? "active" : "")" asp-page="/Admin/Users">Users</a></li>
+                }
+                else if (role == "Producer")
+                {
+                    <li><a class="tl-nav-link @(Is("/Producer") ? "active" : "")" asp-page="/Producer/Dashboard">Dashboard</a></li>
+                }
+                else if (role == "Inspector")
+                {
+                    <li><a class="tl-nav-link @(Is("/Inspector/Index", "/Inspector/Check", "/Inspector/Dashboard") ? "active" : "")" asp-page="/Inspector/Index">Queue</a></li>
+                    <li><a class="tl-nav-link @(Is("/Inspector/History") ? "active" : "")" asp-page="/Inspector/History">History</a></li>
+                }
+                else if (role == "Warehouse")
+                {
+                    <li><a class="tl-nav-link @(Is("/Warehouse") ? "active" : "")" asp-page="/Warehouse/Dashboard">Dashboard</a></li>
+                }
+                </ul>
+                <partial name="_LoginPartial" />
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
+    <main role="main" class="tl-main">
         <div class="container">
-            &copy; 2026 - TraceLinq - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="tl-footer">
+        <div class="container d-flex flex-wrap justify-content-between gap-2">
+            <span>&copy; 2026 TraceLinq</span>
+            <span>Supply chain traceability, from producer to shelf.</span>
         </div>
     </footer>
 
