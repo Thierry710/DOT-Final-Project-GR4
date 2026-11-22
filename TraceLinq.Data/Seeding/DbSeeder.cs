@@ -28,27 +28,28 @@ public static class DbSeeder
                 new Location { LocationName = "Section B, Shelf 3" },
                 new Location { LocationName = "Cold Room 1" });
         }
+
+        // Save users/locations first so the producer lookup below works on a fresh database.
+        db.SaveChanges();
+
         if (!db.Batches.Any())
         {
-            var producer = db.Users.First(u => u.Role == UserRole.Producer);
+            var producer = db.Users.FirstOrDefault(u => u.Role == UserRole.Producer);
 
-            if(producer == null)
+            if (producer != null)
             {
-                return;
+                db.Batches.Add(new Batch
+                {
+                    BatchId = $"BT-{DateTime.Today:yyyyMMdd}-001",
+                    ProductType = "Coffee Beans",
+                    Quantity = 100,
+                    Unit = "kg",
+                    OriginLocation = "Nyamagabe, Rwanda",
+                    ProductionDate = DateOnly.FromDateTime(DateTime.Today),
+                    ProducerId = producer.UserId,
+                    Status = BatchStatus.Registered,
+                });
             }
-
-            db.Batches.Add(new Batch
-            {
-                BatchId = "BATCH-001",
-                ProductType = "Coffee Beans",
-                Quantity = 100,
-                Unit = "kg",
-                OriginLocation = "Nyamagabe, Rwanda",
-                ProductionDate = DateOnly.FromDateTime(DateTime.Today),
-                ProducerId = producer.UserId,
-                Status = BatchStatus.Registered,
-            });
-
         }
 
         db.SaveChanges();
