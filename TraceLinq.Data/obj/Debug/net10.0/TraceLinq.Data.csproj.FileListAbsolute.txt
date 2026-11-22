@@ -28,4 +28,3 @@ C:\Users\Owner\source\repos\TraceLinq\TraceLinq.Data\obj\Debug\net10.0\refint\Tr
 C:\Users\Owner\source\repos\TraceLinq\TraceLinq.Data\obj\Debug\net10.0\TraceLinq.Data.pdb
 C:\Users\Owner\source\repos\TraceLinq\TraceLinq.Data\obj\Debug\net10.0\TraceLinq.Data.genruntimeconfig.cache
 C:\Users\Owner\source\repos\TraceLinq\TraceLinq.Data\obj\Debug\net10.0\ref\TraceLinq.Data.dll
-C:\Users\Owner\source\repos\TraceLinq\TraceLinq.Data\obj\Debug\net10.0\TraceLin.E36FFAFB.Up2Date

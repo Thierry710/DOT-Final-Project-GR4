@@ -32,6 +32,11 @@ public static class DbSeeder
         {
             var producer = db.Users.First(u => u.Role == UserRole.Producer);
 
+            if(producer == null)
+            {
+                return;
+            }
+
             db.Batches.Add(new Batch
             {
                 BatchId = "BATCH-001",

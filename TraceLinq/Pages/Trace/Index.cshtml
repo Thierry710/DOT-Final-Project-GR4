@@ -1,73 +1,93 @@
 ﻿@page
+@using TraceLinq.Data.Models
 @model TraceLinq.Pages.Trace.IndexModel
 @{
     ViewData["Title"] = "Track a Batch";
 }
 
-<h1 class="h3">Track a Batch</h1>
-<p class="text-muted">Enter a batch ID to see its journey from prod to delivery</p>
+<h1 class="h3 mb-3">Track a Batch</h1>
+<p class="text-muted">Enter a batch ID to see its journey from production to delivery.</p>
 
 <form method="get" class="row g-2 mb-4">
     <div class="col-auto">
         <input type="text" name="batchId" class="form-control" placeholder="Batch ID" value="@Model.BatchId" />
     </div>
     <div class="col-auto">
-        <button type="submit" class="btn btn-primary mb-3">Track</button>
+        <button type="submit" class="btn btn-primary">Track</button>
     </div>
 </form>
 
+<p class="text-muted small">
+    <span class="badge text-bg-secondary">Coming soon</span> Scan a batch QR code to track it instantly.
+</p>
 
 @if (Model.Searched)
 {
-    if(Model.Batch is null)
+    if (Model.Batch is null)
     {
-        <div class="alert alert-warning" role="alert">
-            Batch not found.
-        </div>
+        <div class="alert alert-warning" role="alert">Batch not found.</div>
     }
     else
     {
-        <h2 class="h5">Batch @Model.BatchId</h2>
+        var b = Model.Batch;
+        var q = b.QualityCheck;
+        var w = b.WarehouseStorage;
+
+        <h2 class="h5">Batch @b.BatchId</h2>
 
         <ul class="list-group mb-4">
             <li class="list-group-item">
-                <strong>Registered</strong><br />
-                Product: @Model.Batch.ProductType (@Model.Batch.Quantity @Model.Batch.Unit)<br/>
-                Origin: @Model.Batch.OriginLocation<br />
-                Production date: @Model.Batch.ProductionDate.ToString("yyyy-MM-dd")<br />
-                Registered by: @Model.Batch.CreatedAt
+                <strong>1. Registered</strong>
+                <span class="badge text-bg-secondary ms-2">@b.Status</span><br />
+                Product: @b.ProductType (@b.Quantity @b.Unit)<br />
+                Origin: @b.OriginLocation<br />
+                Production date: @b.ProductionDate.ToString("yyyy-MM-dd")<br />
+                Registered by: @b.Producer.FullName on @b.CreatedAt.ToString("yyyy-MM-dd HH:mm")
             </li>
 
-            @if(Model.Batch.QualityCheck is not null)
+            @if (q is not null)
             {
                 <li class="list-group-item">
-                    <strong>Quality Check</strong><br />
-                    Result:
-                    <span class="badge @(Model.Batch.QualityCheck.Result == TraceLinq.Data.Models.QualityResult.Passed ? "bg-success" : "bg-danger")">
-                        @Model.Batch.QualityCheck.Result
-                    </span><br />
-                    checked on: @Model.Batch.QualityCheck.CheckedAt
-                </li>
-            }
-
-            @if (Model.Batch.WarehouseStorage is not null)
-            {
-                <li class="list-group-item">
-                    <strong>WarehouseStorage</strong><br />
-                    Location: @Model.Batch.WarehouseStorage.StorageLocation<br />
-                    Received on: @Model.Batch.WarehouseStorage.ArrivalTime<br/>
-                    @if (Model.Batch.WarehouseStorage.DispatchedAt is not null)
+                    <strong>2. Quality check</strong>
+                    @if (q.Result == QualityResult.Passed)
                     {
-                        <textarea>Dispatched on: @Model.Batch.WarehouseStorage.DispatchedAt</textarea>
+                        <span class="badge text-bg-success ms-2">Pass</span>
                     }
                     else
                     {
-                        <textarea>Still in Storage</textarea>
+                        <span class="badge text-bg-danger ms-2">Fail</span>
                     }
-                    
+                    <br />
+                    Checked on: @q.CheckedAt.ToString("yyyy-MM-dd HH:mm") by @q.Inspector.FullName
+                    @if (!string.IsNullOrEmpty(q.Remarks))
+                    {
+                        <br />
+                        <span>Remarks: @q.Remarks</span>
+                    }
                 </li>
             }
-            
+
+            @if (w is not null)
+            {
+                <li class="list-group-item">
+                    <strong>3. Warehouse storage</strong><br />
+                    Location: @w.StorageLocation<br />
+                    Received on: @w.ArrivalTime.ToString("yyyy-MM-dd HH:mm")
+                </li>
+
+                @if (w.DispatchedAt is not null)
+                {
+                    <li class="list-group-item">
+                        <strong>4. Dispatched</strong>
+                        <span class="badge text-bg-primary ms-2">Dispatched</span><br />
+                        Dispatched on: @w.DispatchedAt.Value.ToString("yyyy-MM-dd HH:mm")
+                    </li>
+                }
+                else
+                {
+                    <li class="list-group-item text-muted">Still in storage.</li>
+                }
+            }
         </ul>
     }
 }

@@ -1,88 +1,113 @@
 @page
 @model TraceLinq.Pages.Warehouse.DashboardModel
 @{
-    ViewData["Title"] = "Warehouse dashboard";
+    ViewData["Title"] = "Warehouse Dashboard";
 }
 
-<h1 class="h3">Warehouse dashboard</h1>
+<h1 class="h3 mb-3">Warehouse Dashboard</h1>
 <p>Welcome, @User.FullName().</p>
 
-<h2 class="h5 mt-4">Ready to receive</h2>
-@if (!Model.ReadyToReceive.Any())
+@if (Model.Message != null)
 {
-    <p class="text-muted">Nothing waiting right now.</p>
+    <div class="alert alert-success">@Model.Message</div>
 }
-else
+@if (Model.Error != null)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Batch ID</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Location</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var batch in Model.ReadyToReceive)
-            {
-                <tr>
-                    <td>@batch.BatchId</td>
-                    <td>@batch.ProductType</td>
-                    <td>@batch.Quantity @batch.Unit</td>
-                    <td>
-                        <form method="post" asp-page-handler="Receive" class="d-flex gap-2">
-                            <input type="hidden" name="batchId" value="@batch.BatchId" />
-                            <select name="locationName" class="form-select form-select-sm">
-                                @foreach (var loc in Model.Locations)
-                                {
-                                    <option value="@loc.LocationName">@loc.LocationName</option>
-                                }
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-success">Receive</button>
-                        </form>
-                    </td>
-                    <td></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="alert alert-danger">@Model.Error</div>
 }
 
-<h2 class="h5 mt-4">In storage</h2>
-@if (!Model.InStorage.Any())
-{
-    <p class="text-muted">Nothing in storage right now.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Ready to receive</h5>
+                <p class="display-6 mb-0">@Model.ReadyToReceive.Count</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <h5 class="card-title">In storage</h5>
+                <p class="display-6 mb-0">@Model.InStorage.Count</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h5">Ready to receive</h2>
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Batch ID</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Receive into location</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var batch in Model.ReadyToReceive)
+        {
             <tr>
-                <th>Batch ID</th>
-                <th>Product</th>
-                <th>Location</th>
-                <th>Arrived</th>
-                <th></th>
+                <td>@batch.BatchId</td>
+                <td>@batch.ProductType</td>
+                <td>@batch.Quantity @batch.Unit</td>
+                <td>
+                    <form method="post" asp-page-handler="Receive" class="d-flex gap-2">
+                        <input type="hidden" name="batchId" value="@batch.BatchId" />
+                        <select name="locationName" class="form-select form-select-sm" required>
+                            @foreach (var loc in Model.Locations)
+                            {
+                                <option value="@loc.LocationName">@loc.LocationName</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-success">Receive</button>
+                    </form>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var storage in Model.InStorage)
-            {
-                <tr>
-                    <td>@storage.BatchId</td>
-                    <td>@storage.Batch.ProductType</td>
-                    <td>@storage.StorageLocation</td>
-                    <td>@storage.ArrivalTime</td>
-                    <td>
-                        <form method="post" asp-page-handler="Dispatch">
-                            <input type="hidden" name="batchId" value="@storage.BatchId" />
-                            <button type="submit" class="btn btn-sm btn-outline-secondary">Dispatch</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        }
+        @if (!Model.ReadyToReceive.Any())
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">Nothing waiting right now.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2 class="h5 mt-4">In storage</h2>
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Batch ID</th>
+            <th>Product</th>
+            <th>Location</th>
+            <th>Arrived</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var storage in Model.InStorage)
+        {
+            <tr>
+                <td>@storage.BatchId</td>
+                <td>@storage.Batch.ProductType</td>
+                <td>@storage.StorageLocation</td>
+                <td>@storage.ArrivalTime.ToString("yyyy-MM-dd HH:mm")</td>
+                <td class="text-end">
+                    <form method="post" asp-page-handler="Dispatch" class="d-inline"
+                          onsubmit="return confirm('Dispatch batch @storage.BatchId?');">
+                        <input type="hidden" name="batchId" value="@storage.BatchId" />
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Dispatch</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        @if (!Model.InStorage.Any())
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted">Nothing in storage right now.</td>
+            </tr>
+        }
+    </tbody>
+</table>
