@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="TraceLinq.Api/TraceLinq.Api.csproj" />
+  <Project Path="TraceLinq.Data/TraceLinq.Data.csproj" />
+  <Project Path="TraceLinq/TraceLinq.csproj" />
+</Solution>
