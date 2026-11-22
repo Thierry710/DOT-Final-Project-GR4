@@ -1,0 +1,73 @@
+﻿@page
+@model TraceLinq.Pages.Trace.IndexModel
+@{
+    ViewData["Title"] = "Track a Batch";
+}
+
+<h1 class="h3">Track a Batch</h1>
+<p class="text-muted">Enter a batch ID to see its journey from prod to delivery</p>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-auto">
+        <input type="text" name="batchId" class="form-control" placeholder="Batch ID" value="@Model.BatchId" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3">Track</button>
+    </div>
+</form>
+
+
+@if (Model.Searched)
+{
+    if(Model.Batch is null)
+    {
+        <div class="alert alert-warning" role="alert">
+            Batch not found.
+        </div>
+    }
+    else
+    {
+        <h2 class="h5">Batch @Model.BatchId</h2>
+
+        <ul class="list-group mb-4">
+            <li class="list-group-item">
+                <strong>Registered</strong><br />
+                Product: @Model.Batch.ProductType (@Model.Batch.Quantity @Model.Batch.Unit)<br/>
+                Origin: @Model.Batch.OriginLocation<br />
+                Production date: @Model.Batch.ProductionDate.ToString("yyyy-MM-dd")<br />
+                Registered by: @Model.Batch.CreatedAt
+            </li>
+
+            @if(Model.Batch.QualityCheck is not null)
+            {
+                <li class="list-group-item">
+                    <strong>Quality Check</strong><br />
+                    Result:
+                    <span class="badge @(Model.Batch.QualityCheck.Result == TraceLinq.Data.Models.QualityResult.Passed ? "bg-success" : "bg-danger")">
+                        @Model.Batch.QualityCheck.Result
+                    </span><br />
+                    checked on: @Model.Batch.QualityCheck.CheckedAt
+                </li>
+            }
+
+            @if (Model.Batch.WarehouseStorage is not null)
+            {
+                <li class="list-group-item">
+                    <strong>WarehouseStorage</strong><br />
+                    Location: @Model.Batch.WarehouseStorage.StorageLocation<br />
+                    Received on: @Model.Batch.WarehouseStorage.ArrivalTime<br/>
+                    @if (Model.Batch.WarehouseStorage.DispatchedAt is not null)
+                    {
+                        <textarea>Dispatched on: @Model.Batch.WarehouseStorage.DispatchedAt</textarea>
+                    }
+                    else
+                    {
+                        <textarea>Still in Storage</textarea>
+                    }
+                    
+                </li>
+            }
+            
+        </ul>
+    }
+}

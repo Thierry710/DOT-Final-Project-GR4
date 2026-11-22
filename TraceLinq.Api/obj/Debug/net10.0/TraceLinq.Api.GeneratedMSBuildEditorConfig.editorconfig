@@ -1,52 +1,32 @@
 is_global = true
 build_property.TargetFramework = net10.0
-build_property.TargetFrameworkIdentifier = .NETCoreApp
-build_property.TargetFrameworkVersion = v10.0
+build_property.TargetFramework = net10.0
+build_property.TargetPlatformMinVersion = 
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
 build_property.ProjectTypeGuids = 
 build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
 build_property.PlatformNeutralAssembly = 
 build_property.EnforceExtendedAnalyzerRules = 
-build_property.EntryPointFilePath = 
+build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.EntryPointFilePath = 
 build_property.RootNamespace = TraceLinq.Api
 build_property.RootNamespace = TraceLinq.Api
-build_property.ProjectDir = /Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api/
+build_property.ProjectDir = C:\Users\Owner\source\repos\TraceLinq\TraceLinq.Api\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 10.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api
+build_property.MSBuildProjectDirectory = C:\Users\Owner\source\repos\TraceLinq\TraceLinq.Api
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
-
-[/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api/Pages/Account/Login.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api/Pages/Account/Logout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQWNjb3VudC9Mb2dvdXQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api/Pages/Admin/Users.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQWRtaW4vVXNlcnMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api/Pages/Inspector/Dashboard.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5zcGVjdG9yL0Rhc2hib2FyZC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api/Pages/Producer/Dashboard.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjZXIvRGFzaGJvYXJkLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api/Pages/Warehouse/Dashboard.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV2FyZWhvdXNlL0Rhc2hib2FyZC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/epaphras/Documents/SaaS/DOT-Final-Project-GR4/TraceLinq.Api/Pages/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
