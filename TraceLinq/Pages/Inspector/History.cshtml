@@ -1,0 +1,62 @@
+@page
+@model TraceLinq.Pages.Inspector.HistoryModel
+@{
+    ViewData["Title"] = "Inspection History";
+}
+
+<h1 class="h3 mb-3">Inspection History</h1>
+
+<ul class="nav nav-pills mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(Model.Filter == "All" ? "active" : "")" asp-page="History" asp-route-filter="All">All</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.Filter == "Pass" ? "active" : "")" asp-page="History" asp-route-filter="Pass">Pass</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.Filter == "Fail" ? "active" : "")" asp-page="History" asp-route-filter="Fail">Fail</a>
+    </li>
+</ul>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Batch ID</th>
+            <th>Product</th>
+            <th>Result</th>
+            <th>Remarks</th>
+            <th>Inspector</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model.Checks)
+        {
+            <tr>
+                <td>@c.CheckedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@c.BatchId</td>
+                <td>@c.Batch.ProductType</td>
+                <td>
+                    @if (c.Result.ToString() == "Passed")
+                    {
+                        <span class="badge text-bg-success">Pass</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-danger">Fail</span>
+                    }
+                </td>
+                <td>@c.Remarks</td>
+                <td>@c.Inspector.FullName</td>
+            </tr>
+        }
+        @if (!Model.Checks.Any())
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted">No inspections yet.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-page="Index" class="btn btn-secondary">Back to dashboard</a>
