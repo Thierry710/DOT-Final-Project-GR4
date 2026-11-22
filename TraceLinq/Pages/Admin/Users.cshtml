@@ -2,116 +2,139 @@
 @model TraceLinq.Pages.Admin.UsersModel
 @using TraceLinq.Data.Models
 @{
-    ViewData["Title"] = "Manage Users";
+    ViewData["Title"] = "Manage users";
     bool editing = Model.Input.UserId != 0;
+    string Initials(string? n) => string.Concat((n ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpperInvariant(p[0])));
 }
 
-<h1 class="h3 mb-3">Manage Users</h1>
+<div class="tl-page-head">
+    <div>
+        <p class="tl-eyebrow">Admin</p>
+        <h1>Manage users</h1>
+        <p class="tl-sub">Add people, change their role, reset passwords or deactivate accounts.</p>
+    </div>
+</div>
 
 @if (Model.Message != null)
 {
-    <div class="alert alert-success">@Model.Message</div>
+    <div class="alert alert-success" role="status">@Model.Message</div>
 }
 @if (Model.Error != null)
 {
-    <div class="alert alert-danger">@Model.Error</div>
+    <div class="alert alert-danger" role="alert">@Model.Error</div>
 }
 
-<div class="row">
-    <div class="col-lg-8 mb-4">
-        <form method="get" class="row g-2 mb-3">
-            <div class="col">
-                <input asp-for="Search" class="form-control" placeholder="Search by username or full name" />
-            </div>
-            <div class="col-auto">
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="tl-card">
+            <form method="get" class="d-flex flex-wrap gap-2 p-3 border-bottom" style="border-color:var(--tl-border)!important">
+                <input asp-for="Search" class="form-control flex-grow-1" style="min-width:200px;flex-basis:240px" placeholder="Search by username or full name" aria-label="Search users" />
                 <button type="submit" class="btn btn-secondary">Search</button>
-                <a asp-page="Users" class="btn btn-outline-secondary">Clear</a>
-            </div>
-        </form>
-
-        <table class="table table-striped align-middle">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Full name</th>
-                    <th>Role</th>
-                    <th>Active</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var u in Model.Users)
+                @if (!string.IsNullOrWhiteSpace(Model.Search))
                 {
-                    <tr>
-                        <td>@u.UserId</td>
-                        <td>@u.Username</td>
-                        <td>@u.FullName</td>
-                        <td>@u.Role</td>
-                        <td>
-                            @if (u.IsActive) { <span class="badge text-bg-success">Yes</span> }
-                            else { <span class="badge text-bg-secondary">No</span> }
-                        </td>
-                        <td class="text-end text-nowrap">
-                            <a asp-page="Users" asp-route-editId="@u.UserId" asp-route-search="@Model.Search"
-                               class="btn btn-sm btn-outline-primary">Edit</a>
-                            @if (u.UserId != User.UserId())
-                            {
-                                <form method="post" asp-page-handler="Delete" asp-route-id="@u.UserId"
-                                      asp-route-search="@Model.Search" class="d-inline"
-                                      onsubmit="return confirm('Delete user @u.Username?');">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            }
-                        </td>
-                    </tr>
+                    <a asp-page="Users" class="btn btn-outline-secondary">Clear</a>
                 }
+            </form>
+
+            <div class="tl-table-wrap">
+                <table class="tl-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model.Users)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="tl-avatar">@Initials(u.FullName)</span>
+                                        <div>
+                                            <div class="fw-semibold">@u.FullName</div>
+                                            <div class="tl-sub" style="margin:0;font-size:.82rem">@u.Username</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@u.Role</td>
+                                <td>
+                                    @if (u.IsActive) { <span class="tl-status tl-status-active">Active</span> }
+                                    else { <span class="tl-status tl-status-inactive">Inactive</span> }
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <a asp-page="Users" asp-route-editId="@u.UserId" asp-route-search="@Model.Search"
+                                       class="btn btn-sm btn-outline-primary">Edit</a>
+                                    @if (u.UserId != User.UserId())
+                                    {
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@u.UserId"
+                                              asp-route-search="@Model.Search" class="d-inline"
+                                              onsubmit="return confirm('Delete user @u.Username?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
                 @if (!Model.Users.Any())
                 {
-                    <tr><td colspan="6" class="text-center text-muted">No users found.</td></tr>
+                    <div class="tl-empty">
+                        <partial name="_Icon" model='"users"' />
+                        <strong>No users found</strong>
+                        Try a different search, or add a new user.
+                    </div>
                 }
-            </tbody>
-        </table>
+            </div>
+        </div>
+        <p class="tl-sub mt-2 small">@Model.Users.Count user@(Model.Users.Count == 1 ? "" : "s") shown</p>
     </div>
 
     <div class="col-lg-4">
-        <h2 class="h5">@(editing ? "Edit user" : "Add user")</h2>
-        <form method="post" asp-page-handler="Save" asp-route-search="@Model.Search">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Input.UserId" />
+        <div class="tl-card tl-card-pad tl-sticky">
+            <h2 class="tl-card-title">@(editing ? "Edit user" : "Add a user")</h2>
+            <form method="post" asp-page-handler="Save" asp-route-search="@Model.Search">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Input.UserId" />
 
-            <div class="mb-3">
-                <label asp-for="Input.Username" class="form-label">Username</label>
-                <input asp-for="Input.Username" class="form-control" autocomplete="off" />
-                <span asp-validation-for="Input.Username" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Input.FullName" class="form-label">Full name</label>
-                <input asp-for="Input.FullName" class="form-control" />
-                <span asp-validation-for="Input.FullName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Input.Password" class="form-label">
-                    @(editing ? "New password (leave empty to keep)" : "Password")
-                </label>
-                <input asp-for="Input.Password" type="password" class="form-control" autocomplete="new-password" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Input.Role" class="form-label">Role</label>
-                <select asp-for="Input.Role" asp-items="Html.GetEnumSelectList<UserRole>()" class="form-select"></select>
-            </div>
-            <div class="form-check mb-3">
-                <input asp-for="Input.IsActive" class="form-check-input" />
-                <label asp-for="Input.IsActive" class="form-check-label">Active</label>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Username" class="form-label">Username</label>
+                    <input asp-for="Input.Username" class="form-control" autocomplete="off" />
+                    <span asp-validation-for="Input.Username" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.FullName" class="form-label">Full name</label>
+                    <input asp-for="Input.FullName" class="form-control" />
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Password" class="form-label">
+                        @(editing ? "New password (leave empty to keep)" : "Password")
+                    </label>
+                    <input asp-for="Input.Password" type="password" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Role" class="form-label">Role</label>
+                    <select asp-for="Input.Role" asp-items="Html.GetEnumSelectList<UserRole>()" class="form-select"></select>
+                </div>
+                <div class="form-check form-switch mb-4">
+                    <input asp-for="Input.IsActive" class="form-check-input" role="switch" />
+                    <label asp-for="Input.IsActive" class="form-check-label">Account is active</label>
+                </div>
 
-            <button type="submit" class="btn btn-primary">@(editing ? "Save changes" : "Add user")</button>
-            @if (editing)
-            {
-                <a asp-page="Users" asp-route-search="@Model.Search" class="btn btn-secondary">Cancel</a>
-            }
-        </form>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">@(editing ? "Save changes" : "Add user")</button>
+                    @if (editing)
+                    {
+                        <a asp-page="Users" asp-route-search="@Model.Search" class="btn btn-secondary">Cancel</a>
+                    }
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

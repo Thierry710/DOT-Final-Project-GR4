@@ -2,61 +2,76 @@
 @using TraceLinq.Data.Models
 @model TraceLinq.Pages.Inspector.CheckModel
 @{
-    ViewData["Title"] = "Quality Check";
+    ViewData["Title"] = "Quality check";
 }
 
-<h1 class="h3 mb-3">Quality Check: @Model.Batch!.BatchId</h1>
+<div class="tl-page-head">
+    <div>
+        <p class="tl-eyebrow">Inspector &middot; Quality check</p>
+        <h1 style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">@Model.Batch!.BatchId</h1>
+        <p class="tl-sub">Review the batch details, then record your decision.</p>
+    </div>
+    <partial name="_StatusBadge" model="Model.Batch.Status.ToString()" />
+</div>
 
-<dl class="row">
-    <dt class="col-sm-3">Product</dt>
-    <dd class="col-sm-9">@Model.Batch.ProductType</dd>
-    <dt class="col-sm-3">Quantity</dt>
-    <dd class="col-sm-9">@Model.Batch.Quantity @Model.Batch.Unit</dd>
-    <dt class="col-sm-3">Origin</dt>
-    <dd class="col-sm-9">@Model.Batch.OriginLocation</dd>
-    <dt class="col-sm-3">Production Date</dt>
-    <dd class="col-sm-9">@Model.Batch.ProductionDate</dd>
-    <dt class="col-sm-3">Producer</dt>
-    <dd class="col-sm-9">@Model.Batch.Producer.FullName</dd>
-    <dt class="col-sm-3">Status</dt>
-    <dd class="col-sm-9">@Model.Batch.Status</dd>
-</dl>
-
-@if (Model.Batch.Status != BatchStatus.Registered)
-{
-    <div class="alert alert-info">This batch has already been inspected.</div>
-    <a asp-page="Index" class="btn btn-secondary">Back</a>
-}
-else
-{
-    <form method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <div class="mb-3">
-            <label class="form-label d-block">Result</label>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="Result" id="resultPass" value="Passed"
-                       checked="@(Model.Result.ToString() == "Passed")" />
-                <label class="form-check-label" for="resultPass">Pass</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="Result" id="resultFail" value="Failed"
-                       checked="@(Model.Result.ToString() == "Failed")" />
-                <label class="form-check-label" for="resultFail">Fail</label>
-            </div>
-            <span asp-validation-for="Result" class="text-danger d-block"></span>
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="tl-card tl-card-pad h-100">
+            <h2 class="tl-card-title">Batch details</h2>
+            <dl class="tl-dl">
+                <div><dt>Product</dt><dd>@Model.Batch.ProductType</dd></div>
+                <div><dt>Quantity</dt><dd>@Model.Batch.Quantity.ToString("0.##") @Model.Batch.Unit</dd></div>
+                <div><dt>Origin</dt><dd>@Model.Batch.OriginLocation</dd></div>
+                <div><dt>Production date</dt><dd>@Model.Batch.ProductionDate.ToString("d MMM yyyy")</dd></div>
+                <div><dt>Producer</dt><dd>@Model.Batch.Producer.FullName</dd></div>
+            </dl>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label asp-for="Remarks" class="form-label">Remarks (required if Fail)</label>
-            <textarea asp-for="Remarks" class="form-control" rows="4" maxlength="300"></textarea>
-            <span asp-validation-for="Remarks" class="text-danger"></span>
+    <div class="col-lg-6">
+        <div class="tl-card tl-card-pad h-100">
+            @if (Model.Batch.Status != BatchStatus.Registered)
+            {
+                <h2 class="tl-card-title">Inspection</h2>
+                <div class="alert alert-info">This batch has already been inspected.</div>
+                <a asp-page="Index" class="btn btn-secondary">Back to the queue</a>
+            }
+            else
+            {
+                <h2 class="tl-card-title">Your decision</h2>
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <span class="form-label d-block">Result</span>
+                        <div class="tl-choice">
+                            <div>
+                                <input type="radio" name="Result" id="resultPass" value="Passed" checked="@(Model.Result.ToString() == "Passed")" />
+                                <label for="resultPass"><partial name="_Icon" model='"check"' /> Pass</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="Result" id="resultFail" value="Failed" checked="@(Model.Result.ToString() == "Failed")" />
+                                <label for="resultFail"><partial name="_Icon" model='"x"' /> Fail</label>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Result" class="text-danger d-block mt-1"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Remarks" class="form-label">Remarks <span class="tl-sub fw-normal">(required if the batch fails)</span></label>
+                        <textarea asp-for="Remarks" class="form-control" rows="4" maxlength="300" placeholder="What did you find?"></textarea>
+                        <span asp-validation-for="Remarks" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">Submit inspection</button>
+                        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            }
         </div>
-
-        <button type="submit" class="btn btn-primary">Submit inspection</button>
-        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
-    </form>
-}
+    </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

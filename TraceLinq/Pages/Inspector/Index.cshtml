@@ -2,99 +2,99 @@
 @using TraceLinq.Data.Models
 @model TraceLinq.Pages.Inspector.IndexModel
 @{
-    ViewData["Title"] = "Inspector Dashboard";
+    ViewData["Title"] = "Inspection queue";
 }
 
-<h1 class="h3 mb-3">Inspector Dashboard</h1>
-
-<a asp-page="History" class="btn btn-outline-secondary mb-3">View inspection history</a>
+<div class="tl-page-head">
+    <div>
+        <p class="tl-eyebrow">Inspector</p>
+        <h1>Inspection queue</h1>
+        <p class="tl-sub">Registered batches waiting for a quality check.</p>
+    </div>
+    <a asp-page="History" class="btn btn-light-outline">View inspection history</a>
+</div>
 
 @if (TempData["Message"] != null)
 {
-    <div class="alert alert-success">@TempData["Message"]</div>
+    <div class="alert alert-success" role="status">@TempData["Message"]</div>
 }
 
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card text-bg-warning">
-            <div class="card-body">
-                <h5 class="card-title">Pending</h5>
-                <p class="display-6 mb-0">@Model.PendingCount</p>
-            </div>
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-4">
+        <div class="tl-card tl-stat tl-stat-registered">
+            <p class="tl-stat-label">Pending</p>
+            <p class="tl-stat-value">@Model.PendingCount</p>
+            <p class="tl-stat-note">waiting for inspection</p>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-bg-success">
-            <div class="card-body">
-                <h5 class="card-title">Passed</h5>
-                <p class="display-6 mb-0">@Model.PassedCount</p>
-            </div>
+    <div class="col-6 col-sm-4">
+        <div class="tl-card tl-stat tl-stat-passed">
+            <p class="tl-stat-label">Passed</p>
+            <p class="tl-stat-value">@Model.PassedCount</p>
+            <p class="tl-stat-note">cleared for storage</p>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-bg-danger">
-            <div class="card-body">
-                <h5 class="card-title">Failed</h5>
-                <p class="display-6 mb-0">@Model.FailedCount</p>
-            </div>
+    <div class="col-6 col-sm-4">
+        <div class="tl-card tl-stat tl-stat-failed">
+            <p class="tl-stat-label">Failed</p>
+            <p class="tl-stat-value">@Model.FailedCount</p>
+            <p class="tl-stat-note">stopped here</p>
         </div>
     </div>
 </div>
 
-<ul class="nav nav-pills mb-3">
-    <li class="nav-item">
-        <a class="nav-link @(Model.Filter == "Pending" ? "active" : "")" asp-page="Index" asp-route-filter="Pending">Pending</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @(Model.Filter == "Passed" ? "active" : "")" asp-page="Index" asp-route-filter="Passed">Passed</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @(Model.Filter == "Failed" ? "active" : "")" asp-page="Index" asp-route-filter="Failed">Failed</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @(Model.Filter == "All" ? "active" : "")" asp-page="Index" asp-route-filter="All">All</a>
-    </li>
-</ul>
+<nav class="tl-tabs" aria-label="Filter batches">
+    <a class="tl-tab @(Model.Filter == "Pending" ? "active" : "")" asp-page="Index" asp-route-filter="Pending">Pending</a>
+    <a class="tl-tab @(Model.Filter == "Passed" ? "active" : "")" asp-page="Index" asp-route-filter="Passed">Passed</a>
+    <a class="tl-tab @(Model.Filter == "Failed" ? "active" : "")" asp-page="Index" asp-route-filter="Failed">Failed</a>
+    <a class="tl-tab @(Model.Filter == "All" ? "active" : "")" asp-page="Index" asp-route-filter="All">All</a>
+</nav>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Batch ID</th>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Producer</th>
-            <th>Production Date</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var b in Model.Batches)
-        {
-            <tr>
-                <td>@b.BatchId</td>
-                <td>@b.ProductType</td>
-                <td>@b.Quantity @b.Unit</td>
-                <td>@b.Producer.FullName</td>
-                <td>@b.ProductionDate</td>
-                <td>@b.Status</td>
-                <td>
-                    @if (b.Status == BatchStatus.Registered)
-                    {
-                        <a asp-page="Check" asp-route-id="@b.BatchId" class="btn btn-sm btn-primary">Inspect</a>
-                    }
-                    else if (b.QualityCheck != null && !string.IsNullOrEmpty(b.QualityCheck.Remarks))
-                    {
-                        <span class="text-muted small">@b.QualityCheck.Remarks</span>
-                    }
-                </td>
-            </tr>
-        }
+<div class="tl-card">
+    <div class="tl-table-wrap">
+        <table class="tl-table">
+            <thead>
+                <tr>
+                    <th>Batch</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Producer</th>
+                    <th>Produced</th>
+                    <th>Status</th>
+                    <th class="text-end"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model.Batches)
+                {
+                    <tr>
+                        <td class="tl-mono">@b.BatchId</td>
+                        <td class="fw-semibold">@b.ProductType</td>
+                        <td>@b.Quantity.ToString("0.##") @b.Unit</td>
+                        <td>@b.Producer.FullName</td>
+                        <td>@b.ProductionDate.ToString("d MMM yyyy")</td>
+                        <td><partial name="_StatusBadge" model="b.Status.ToString()" /></td>
+                        <td class="text-end">
+                            @if (b.Status == BatchStatus.Registered)
+                            {
+                                <a asp-page="Check" asp-route-id="@b.BatchId" class="btn btn-sm btn-primary">Inspect</a>
+                            }
+                            else if (b.QualityCheck != null && !string.IsNullOrEmpty(b.QualityCheck.Remarks))
+                            {
+                                <span class="tl-sub small">@b.QualityCheck.Remarks</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
         @if (!Model.Batches.Any())
         {
-            <tr>
-                <td colspan="7" class="text-center text-muted">No batches found.</td>
-            </tr>
+            <div class="tl-empty">
+                <partial name="_Icon" model='"inbox"' />
+                <strong>No batches found</strong>
+                @(Model.Filter == "Pending" ? "The queue is clear. New batches appear here as soon as producers register them." : "Nothing matches this filter yet.")
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>

@@ -1,62 +1,58 @@
 @page
 @model TraceLinq.Pages.Inspector.HistoryModel
 @{
-    ViewData["Title"] = "Inspection History";
+    ViewData["Title"] = "Inspection history";
 }
 
-<h1 class="h3 mb-3">Inspection History</h1>
+<div class="tl-page-head">
+    <div>
+        <p class="tl-eyebrow">Inspector</p>
+        <h1>Inspection history</h1>
+        <p class="tl-sub">Every quality check that has been recorded.</p>
+    </div>
+    <a asp-page="Index" class="btn btn-light-outline">Back to the queue</a>
+</div>
 
-<ul class="nav nav-pills mb-3">
-    <li class="nav-item">
-        <a class="nav-link @(Model.Filter == "All" ? "active" : "")" asp-page="History" asp-route-filter="All">All</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @(Model.Filter == "Pass" ? "active" : "")" asp-page="History" asp-route-filter="Pass">Pass</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @(Model.Filter == "Fail" ? "active" : "")" asp-page="History" asp-route-filter="Fail">Fail</a>
-    </li>
-</ul>
+<nav class="tl-tabs" aria-label="Filter results">
+    <a class="tl-tab @(Model.Filter == "All" ? "active" : "")" asp-page="History" asp-route-filter="All">All</a>
+    <a class="tl-tab @(Model.Filter == "Pass" ? "active" : "")" asp-page="History" asp-route-filter="Pass">Passed</a>
+    <a class="tl-tab @(Model.Filter == "Fail" ? "active" : "")" asp-page="History" asp-route-filter="Fail">Failed</a>
+</nav>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Batch ID</th>
-            <th>Product</th>
-            <th>Result</th>
-            <th>Remarks</th>
-            <th>Inspector</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model.Checks)
-        {
-            <tr>
-                <td>@c.CheckedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                <td>@c.BatchId</td>
-                <td>@c.Batch.ProductType</td>
-                <td>
-                    @if (c.Result.ToString() == "Passed")
-                    {
-                        <span class="badge text-bg-success">Pass</span>
-                    }
-                    else
-                    {
-                        <span class="badge text-bg-danger">Fail</span>
-                    }
-                </td>
-                <td>@c.Remarks</td>
-                <td>@c.Inspector.FullName</td>
-            </tr>
-        }
+<div class="tl-card">
+    <div class="tl-table-wrap">
+        <table class="tl-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Batch</th>
+                    <th>Product</th>
+                    <th>Result</th>
+                    <th>Remarks</th>
+                    <th>Inspector</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.Checks)
+                {
+                    <tr>
+                        <td class="text-nowrap">@c.CheckedAt.ToString("d MMM yyyy, HH:mm")</td>
+                        <td class="tl-mono">@c.BatchId</td>
+                        <td class="fw-semibold">@c.Batch.ProductType</td>
+                        <td><partial name="_StatusBadge" model="c.Result.ToString()" /></td>
+                        <td>@(string.IsNullOrWhiteSpace(c.Remarks) ? "—" : c.Remarks)</td>
+                        <td>@c.Inspector.FullName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
         @if (!Model.Checks.Any())
         {
-            <tr>
-                <td colspan="6" class="text-center text-muted">No inspections yet.</td>
-            </tr>
+            <div class="tl-empty">
+                <partial name="_Icon" model='"clock"' />
+                <strong>No inspections yet</strong>
+                Completed quality checks will show up here.
+            </div>
         }
-    </tbody>
-</table>
-
-<a asp-page="Index" class="btn btn-secondary">Back to dashboard</a>
+    </div>
+</div>

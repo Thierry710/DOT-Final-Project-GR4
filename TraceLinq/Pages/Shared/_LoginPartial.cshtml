@@ -1,19 +1,28 @@
-<ul class="navbar-nav">
+@* Right side of the top bar: user chip + logout when signed in, Sign in button otherwise. *@
+@{
+    var fullName = User.FullName();
+    var initials = string.Concat((fullName ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpperInvariant(p[0])));
+}
+<div class="d-flex align-items-center gap-2 ms-md-auto mt-3 mt-md-0">
+    <button type="button" class="tl-icon-btn" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <span class="tl-moon"><partial name="_Icon" model='"moon"' /></span>
+        <span class="tl-sun"><partial name="_Icon" model='"sun"' /></span>
+    </button>
 @if (User.Identity?.IsAuthenticated == true)
 {
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-page="/Index">@User.FullName() (@User.RoleName())</a>
-    </li>
-    <li class="nav-item">
-        <form class="form-inline" method="post" asp-page="/Account/Logout">
-            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
+    <div class="tl-user">
+        <span class="tl-avatar">@(string.IsNullOrEmpty(initials) ? "?" : initials)</span>
+        <span class="tl-user-text">
+            <span class="tl-user-name d-block">@fullName</span>
+            <span class="tl-user-role d-block">@User.RoleName()</span>
+        </span>
+    </div>
+    <form method="post" asp-page="/Account/Logout" class="m-0">
+        <button type="submit" class="tl-icon-btn" aria-label="Log out" title="Log out"><partial name="_Icon" model='"logout"' /></button>
+    </form>
 }
 else
 {
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-page="/Account/Login">Login</a>
-    </li>
+    <a class="btn btn-primary btn-sm" asp-page="/Account/Login">Sign in</a>
 }
-</ul>
+</div>

@@ -1,10 +1,138 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Supply chain traceability";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="tl-hero">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <span class="tl-chip">Supply chain traceability</span>
+            <h1>Know exactly where every batch <em>has been.</em></h1>
+            <p class="tl-lead">
+                TraceLinq follows each batch from the producer, through quality inspection, into the warehouse and out
+                to dispatch, so nothing is ever unaccounted for.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary btn-lg" asp-page="/Account/Login">Sign in <span class="ms-1 d-inline-block align-middle" style="width:18px;height:18px"><partial name="_Icon" model='"arrow"' /></span></a>
+                <a class="btn btn-light-outline btn-lg" href="#how-it-works">How it works</a>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="tl-card tl-trace-card" aria-label="Example batch timeline">
+                <div class="tl-trace-head">
+                    <div>
+                        <div class="tl-trace-id">BT-20261105-001</div>
+                        <div class="tl-trace-sub">Coffee Beans &middot; 500 kg &middot; example</div>
+                    </div>
+                    <partial name="_StatusBadge" model='"InStorage"' />
+                </div>
+                <ol class="tl-timeline">
+                    <li style="--s-bg: var(--st-registered-bg); --s-fg: var(--st-registered);">
+                        <span class="dot"><partial name="_Icon" model='"box"' /></span>
+                        <strong>Produced at Huye Farm</strong>
+                        <span>5 Nov 2026 &middot; registered by the producer</span>
+                    </li>
+                    <li style="--s-bg: var(--st-passed-bg); --s-fg: var(--st-passed);">
+                        <span class="dot"><partial name="_Icon" model='"inspect"' /></span>
+                        <strong>Quality check passed</strong>
+                        <span>6 Nov 2026 &middot; "Good quality"</span>
+                    </li>
+                    <li style="--s-bg: var(--st-instorage-bg); --s-fg: var(--st-instorage);">
+                        <span class="dot"><partial name="_Icon" model='"warehouse"' /></span>
+                        <strong>Stored in Section B, Shelf 3</strong>
+                        <span>6 Nov 2026 &middot; received by the warehouse</span>
+                    </li>
+                    <li style="--s-bg: var(--tl-surface-2); --s-fg: var(--tl-muted);">
+                        <span class="dot"><partial name="_Icon" model='"truck"' /></span>
+                        <strong>Awaiting dispatch</strong>
+                        <span>Next step in the journey</span>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="tl-section" id="how-it-works">
+    <p class="tl-eyebrow">How it works</p>
+    <h2 class="tl-section-title">One batch, four clear steps</h2>
+    <p class="tl-sub mb-4">Every step is recorded, so the full history of a batch is always one lookup away.</p>
+    <div class="row g-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="tl-card tl-step">
+                <span class="tl-step-num">1</span>
+                <h3>Register</h3>
+                <p>The producer records the batch: product, quantity, origin and production date.</p>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="tl-card tl-step">
+                <span class="tl-step-num">2</span>
+                <h3>Inspect</h3>
+                <p>An inspector passes or fails the batch. A failed batch can never move on.</p>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="tl-card tl-step">
+                <span class="tl-step-num">3</span>
+                <h3>Store</h3>
+                <p>The warehouse receives passed batches, assigns a location and dispatches them.</p>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="tl-card tl-step">
+                <span class="tl-step-num">4</span>
+                <h3>Trace</h3>
+                <p>Anyone can follow a batch's journey from origin to dispatch, step by step.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="tl-section">
+    <p class="tl-eyebrow">Built for your team</p>
+    <h2 class="tl-section-title">The right tools for every role</h2>
+    <p class="tl-sub mb-4">Each person signs in and lands on exactly what they need.</p>
+    <div class="row g-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="tl-card tl-role">
+                <span class="tl-role-icon" style="--s-bg: var(--st-registered-bg); --s-fg: var(--st-registered);"><partial name="_Icon" model='"box"' /></span>
+                <h3>Producer</h3>
+                <p>Register batches and follow each one's status.</p>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="tl-card tl-role">
+                <span class="tl-role-icon" style="--s-bg: var(--st-passed-bg); --s-fg: var(--st-passed);"><partial name="_Icon" model='"inspect"' /></span>
+                <h3>Inspector</h3>
+                <p>Work through the queue and record every quality check.</p>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="tl-card tl-role">
+                <span class="tl-role-icon" style="--s-bg: var(--st-instorage-bg); --s-fg: var(--st-instorage);"><partial name="_Icon" model='"warehouse"' /></span>
+                <h3>Warehouse</h3>
+                <p>Receive, store and dispatch batches with full location tracking.</p>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="tl-card tl-role">
+                <span class="tl-role-icon" style="--s-bg: var(--st-dispatched-bg); --s-fg: var(--st-dispatched);"><partial name="_Icon" model='"users"' /></span>
+                <h3>Admin</h3>
+                <p>Manage accounts and keep an eye on activity across the system.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="tl-section pb-0">
+    <div class="tl-cta">
+        <div>
+            <h2>Ready to get started?</h2>
+            <p>Sign in with your TraceLinq account to open your dashboard.</p>
+        </div>
+        <a class="btn btn-lg" asp-page="/Account/Login">Sign in</a>
+    </div>
+</section>
