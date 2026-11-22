@@ -1,6 +1,88 @@
 @page
+@model TraceLinq.Pages.Warehouse.DashboardModel
 @{
     ViewData["Title"] = "Warehouse dashboard";
 }
+
 <h1 class="h3">Warehouse dashboard</h1>
-<p>Welcome, @User.FullName(). This page is a placeholder.</p>
+<p>Welcome, @User.FullName().</p>
+
+<h2 class="h5 mt-4">Ready to receive</h2>
+@if (!Model.ReadyToReceive.Any())
+{
+    <p class="text-muted">Nothing waiting right now.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Batch ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Location</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var batch in Model.ReadyToReceive)
+            {
+                <tr>
+                    <td>@batch.BatchId</td>
+                    <td>@batch.ProductType</td>
+                    <td>@batch.Quantity @batch.Unit</td>
+                    <td>
+                        <form method="post" asp-page-handler="Receive" class="d-flex gap-2">
+                            <input type="hidden" name="batchId" value="@batch.BatchId" />
+                            <select name="locationName" class="form-select form-select-sm">
+                                @foreach (var loc in Model.Locations)
+                                {
+                                    <option value="@loc.LocationName">@loc.LocationName</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-success">Receive</button>
+                        </form>
+                    </td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h2 class="h5 mt-4">In storage</h2>
+@if (!Model.InStorage.Any())
+{
+    <p class="text-muted">Nothing in storage right now.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Batch ID</th>
+                <th>Product</th>
+                <th>Location</th>
+                <th>Arrived</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var storage in Model.InStorage)
+            {
+                <tr>
+                    <td>@storage.BatchId</td>
+                    <td>@storage.Batch.ProductType</td>
+                    <td>@storage.StorageLocation</td>
+                    <td>@storage.ArrivalTime</td>
+                    <td>
+                        <form method="post" asp-page-handler="Dispatch">
+                            <input type="hidden" name="batchId" value="@storage.BatchId" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Dispatch</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
