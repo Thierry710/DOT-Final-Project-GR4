@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14" PrivateAssets="all" />
+    <PackageReference Include="QRCoder" Version="1.9.0" />
   </ItemGroup>
 
   <ItemGroup>
