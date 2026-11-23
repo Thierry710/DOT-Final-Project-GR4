@@ -1,6 +1,116 @@
 @page
+@using TraceLinq.Data.Models
+@model TraceLinq.Pages.Producer.DashboardModel
 @{
     ViewData["Title"] = "Producer dashboard";
+
+    // Stat cards and filter tabs share this list: status, label, note.
+    var statuses = new (BatchStatus Status, string Label, string Note)[]
+    {
+        (BatchStatus.Registered, "Registered", "awaiting inspection"),
+        (BatchStatus.Passed, "Passed", "cleared for storage"),
+        (BatchStatus.Failed, "Failed", "stopped at inspection"),
+        (BatchStatus.InStorage, "In storage", "in the warehouse"),
+        (BatchStatus.Dispatched, "Dispatched", "left the warehouse"),
+    };
 }
-<h1 class="h3">Producer dashboard</h1>
-<p>Welcome, @User.FullName(). This page is a placeholder.</p>
+
+<div class="tl-page-head">
+    <div>
+        <p class="tl-eyebrow">Producer</p>
+        <h1>My batches</h1>
+        <p class="tl-sub">Welcome, @User.FullName(). Track every batch you've registered.</p>
+    </div>
+    <a asp-page="Register" class="btn btn-primary">Register new batch</a>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success" role="status">@TempData["Message"]</div>
+}
+
+<div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4">
+    @foreach (var s in statuses)
+    {
+        <div class="col">
+            <div class="tl-card tl-stat tl-stat-@s.Status.ToString().ToLowerInvariant()">
+                <p class="tl-stat-label">@s.Label</p>
+                <p class="tl-stat-value">@Model.CountFor(s.Status)</p>
+                <p class="tl-stat-note">@s.Note</p>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+    <nav class="tl-tabs" aria-label="Filter batches by status">
+        <a class="tl-tab @(Model.Filter == "All" ? "active" : "")" asp-page="Dashboard" asp-route-filter="All" asp-route-search="@Model.Search">All (@Model.TotalCount)</a>
+        @foreach (var s in statuses)
+        {
+            var key = s.Status.ToString();
+            <a class="tl-tab @(string.Equals(Model.Filter, key, StringComparison.OrdinalIgnoreCase) ? "active" : "")"
+               asp-page="Dashboard" asp-route-filter="@key" asp-route-search="@Model.Search">@s.Label</a>
+        }
+    </nav>
+
+    <form method="get" class="d-flex gap-2 mb-3" role="search">
+        <input type="hidden" name="filter" value="@Model.Filter" />
+        <input type="search" name="search" value="@Model.Search" class="form-control form-control-sm" style="min-width: 15rem"
+               placeholder="Search ID, product or origin" aria-label="Search batches" />
+        <button type="submit" class="btn btn-sm btn-light-outline">Search</button>
+        @if (!string.IsNullOrEmpty(Model.Search))
+        {
+            <a asp-page="Dashboard" asp-route-filter="@Model.Filter" class="btn btn-sm btn-link">Clear</a>
+        }
+    </form>
+</div>
+
+<div class="tl-card">
+    <div class="tl-table-wrap">
+        <table class="tl-table">
+            <thead>
+                <tr>
+                    <th>Batch</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Origin</th>
+                    <th>Produced</th>
+                    <th>Status</th>
+                    <th class="text-end"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model.Batches)
+                {
+                    <tr>
+                        <td class="tl-mono">@b.BatchId</td>
+                        <td class="fw-semibold">@b.ProductType</td>
+                        <td>@b.Quantity.ToString("0.##") @b.Unit</td>
+                        <td>@b.OriginLocation</td>
+                        <td>@b.ProductionDate.ToString("d MMM yyyy")</td>
+                        <td><partial name="_StatusBadge" model="b.Status.ToString()" /></td>
+                        <td class="text-end">
+                            <a asp-page="Details" asp-route-id="@b.BatchId" class="btn btn-sm btn-light-outline">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (!Model.Batches.Any())
+        {
+            <div class="tl-empty">
+                <partial name="_Icon" model='"box"' />
+                @if (Model.TotalCount == 0)
+                {
+                    <strong>No batches yet</strong>
+                    <span>Register your first batch to get its ID and QR code.</span>
+                }
+                else
+                {
+                    <strong>No matching batches</strong>
+                    <span>Try another status or search term.</span>
+                }
+            </div>
+        }
+    </div>
+</div>

@@ -50,7 +50,8 @@
                 }
                 else if (role == "Producer")
                 {
-                    <li><a class="tl-nav-link @(Is("/Producer") ? "active" : "")" asp-page="/Producer/Dashboard">Dashboard</a></li>
+                    <li><a class="tl-nav-link @(Is("/Producer/Dashboard", "/Producer/Details") ? "active" : "")" asp-page="/Producer/Dashboard">Dashboard</a></li>
+                    <li><a class="tl-nav-link @(Is("/Producer/Register") ? "active" : "")" asp-page="/Producer/Register">Register batch</a></li>
                 }
                 else if (role == "Inspector")
                 {
