@@ -1,0 +1,91 @@
+/* Producer batch details: QR label. Scoped to this page (CSS isolation), so it
+   doesn't affect anyone else's pages. Nav/footer/.no-print are already hidden
+   for print by the shared rule at the end of wwwroot/css/site.css. */
+
+.tl-batch-id {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* The label is always black on white, even in dark mode, so the QR scans and prints well. */
+.tl-label {
+    background: #fff;
+    color: #0f172a;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.tl-label-qr {
+    display: block;
+    width: 100%;
+    max-width: 240px;
+    height: auto;
+    margin: 0 auto .75rem;
+    image-rendering: pixelated; /* keep the QR squares sharp when scaled */
+}
+
+.tl-label-id {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: .02em;
+    margin-bottom: .75rem;
+}
+
+.tl-label-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem 1rem;
+    text-align: left;
+    margin: 0 0 .75rem;
+}
+
+.tl-label-info dt {
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #5b6b80;
+    font-weight: 700;
+}
+
+.tl-label-info dd {
+    margin: 0;
+    font-weight: 600;
+    font-size: .88rem;
+}
+
+.tl-label-foot {
+    font-size: .72rem;
+    color: #5b6b80;
+    border-top: 1px solid #e3e8ef;
+    padding-top: .5rem;
+}
+
+@media print {
+    /* Only the label is printed: drop the card around it and centre it on the page. */
+    .tl-label-col {
+        width: 100%;
+        max-width: none;
+        flex: 0 0 100%;
+    }
+
+    .tl-label-col .tl-card {
+        border: 0;
+        padding: 0;
+        background: none;
+    }
+
+    .tl-label {
+        border: 2px solid #0f172a;
+        max-width: 9cm;
+        margin-top: 1cm;
+        break-inside: avoid;
+    }
+
+    .tl-label-qr {
+        max-width: 6cm;
+    }
+}

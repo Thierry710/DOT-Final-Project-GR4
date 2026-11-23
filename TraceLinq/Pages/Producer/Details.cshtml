@@ -1,0 +1,109 @@
+@page "{id}"
+@using TraceLinq.Data.Models
+@model TraceLinq.Pages.Producer.DetailsModel
+@{
+    var b = Model.Batch!;
+    var q = b.QualityCheck;
+    var w = b.WarehouseStorage;
+    var qrSrc = Url.Page("Details", "Qr", new { id = b.BatchId });
+    ViewData["Title"] = b.BatchId;
+}
+
+<div class="tl-page-head no-print">
+    <div>
+        <p class="tl-eyebrow">Producer &middot; Batch details</p>
+        <h1 class="tl-batch-id">@b.BatchId</h1>
+        <p class="tl-sub">Registered @b.CreatedAt.ToString("d MMM yyyy, HH:mm")</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <partial name="_StatusBadge" model="b.Status.ToString()" />
+        <a asp-page="Dashboard" class="btn btn-light-outline">Back to my batches</a>
+    </div>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success no-print" role="status">@TempData["Message"]</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-7 no-print">
+        <div class="tl-card tl-card-pad mb-4">
+            <h2 class="tl-card-title">Batch</h2>
+            <dl class="tl-dl">
+                <div><dt>Product</dt><dd>@b.ProductType</dd></div>
+                <div><dt>Quantity</dt><dd>@b.Quantity.ToString("0.##") @b.Unit</dd></div>
+                <div><dt>Origin</dt><dd>@b.OriginLocation</dd></div>
+                <div><dt>Production date</dt><dd>@b.ProductionDate.ToString("d MMM yyyy")</dd></div>
+            </dl>
+        </div>
+
+        <div class="tl-card tl-card-pad mb-4">
+            <h2 class="tl-card-title">Quality check</h2>
+            @if (q is null)
+            {
+                <p class="tl-sub mb-0">Not inspected yet. An inspector will check this batch soon.</p>
+            }
+            else
+            {
+                <dl class="tl-dl">
+                    <div><dt>Result</dt><dd><partial name="_StatusBadge" model="q.Result.ToString()" /></dd></div>
+                    <div><dt>Checked</dt><dd>@q.CheckedAt.ToString("d MMM yyyy, HH:mm")</dd></div>
+                    <div><dt>Inspector</dt><dd>@q.Inspector.FullName</dd></div>
+                    <div><dt>Remarks</dt><dd>@(string.IsNullOrEmpty(q.Remarks) ? "—" : q.Remarks)</dd></div>
+                </dl>
+            }
+        </div>
+
+        <div class="tl-card tl-card-pad">
+            <h2 class="tl-card-title">Warehouse</h2>
+            @if (w is null)
+            {
+                <p class="tl-sub mb-0">
+                    @(b.Status == BatchStatus.Failed
+                        ? "This batch failed inspection and will not go to the warehouse."
+                        : "Not received in the warehouse yet.")
+                </p>
+            }
+            else
+            {
+                <dl class="tl-dl">
+                    <div><dt>Location</dt><dd>@w.StorageLocation</dd></div>
+                    <div><dt>Arrived</dt><dd>@w.ArrivalTime.ToString("d MMM yyyy, HH:mm")</dd></div>
+                    <div><dt>Status</dt><dd><partial name="_StatusBadge" model="w.Status.ToString()" /></dd></div>
+                    <div><dt>Dispatched</dt><dd>@(w.DispatchedAt?.ToString("d MMM yyyy, HH:mm") ?? "—")</dd></div>
+                </dl>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5 tl-label-col">
+        <div class="tl-card tl-card-pad">
+            <h2 class="tl-card-title no-print">QR code &amp; label</h2>
+
+            @* Everything inside .tl-label is what gets printed. *@
+            <div class="tl-label">
+                <img class="tl-label-qr" src="@qrSrc" alt="QR code for batch @b.BatchId" width="330" height="330" />
+                <div class="tl-label-id">@b.BatchId</div>
+                <dl class="tl-label-info">
+                    <div><dt>Product</dt><dd>@b.ProductType</dd></div>
+                    <div><dt>Quantity</dt><dd>@b.Quantity.ToString("0.##") @b.Unit</dd></div>
+                    <div><dt>Origin</dt><dd>@b.OriginLocation</dd></div>
+                    <div><dt>Produced</dt><dd>@b.ProductionDate.ToString("d MMM yyyy")</dd></div>
+                </dl>
+                <div class="tl-label-foot">Scan to trace this batch &middot; TraceLinq</div>
+            </div>
+
+            <div class="no-print mt-3">
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-page-handler="Download" asp-route-id="@b.BatchId" class="btn btn-primary">Save QR (.png)</a>
+                    <button type="button" class="btn btn-light-outline" onclick="window.print()">Print label</button>
+                </div>
+                <p class="tl-sub small mt-3 mb-0">
+                    The QR opens the public trace page:<br />
+                    <a href="@Model.TraceUrl" target="_blank" rel="noopener" class="text-break">@Model.TraceUrl</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
