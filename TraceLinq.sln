@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraceLinq.Data", "TraceLinq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraceLinq", "TraceLinq\TraceLinq.csproj", "{B50CA4C3-80C3-4FBF-AABB-4AC2E0A4CF6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraceLinq.Tests", "TraceLinq.Tests\TraceLinq.Tests.csproj", "{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{B50CA4C3-80C3-4FBF-AABB-4AC2E0A4CF6F}.Release|x64.Build.0 = Release|Any CPU
 		{B50CA4C3-80C3-4FBF-AABB-4AC2E0A4CF6F}.Release|x86.ActiveCfg = Release|Any CPU
 		{B50CA4C3-80C3-4FBF-AABB-4AC2E0A4CF6F}.Release|x86.Build.0 = Release|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Debug|x64.Build.0 = Debug|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Debug|x86.Build.0 = Debug|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Release|x64.ActiveCfg = Release|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Release|x64.Build.0 = Release|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Release|x86.ActiveCfg = Release|Any CPU
+		{B2A063A4-1E9F-4B27-BA3A-8AFCD31300B7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
